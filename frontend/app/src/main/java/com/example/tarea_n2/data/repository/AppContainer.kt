@@ -6,6 +6,7 @@ import com.example.tarea_n2.data.repository.category.CategoryRepository
 import com.example.tarea_n2.data.repository.category.CategoryRepositoryImpl
 import com.example.tarea_n2.data.repository.event.EventRepository
 import com.example.tarea_n2.data.repository.event.EventRepositoryImpl
+import com.example.tarea_n2.di.NetworkModule
 
 interface AppContainer {
     val categoryRepository: CategoryRepository
@@ -18,7 +19,8 @@ class AppDataContainer(
 
     override val categoryRepository: CategoryRepository by lazy {
         CategoryRepositoryImpl(
-            AppDatabase.getDatabase(context)
+            AppDatabase.getDatabase(context),
+            NetworkModule.provideCategoryApiService(NetworkModule.provideRetrofit())
         )
     }
 

@@ -11,7 +11,7 @@ import com.example.tarea_n2.data.local.entity.EventEntity
 
 @Database(
     entities = [CategoryEntity::class, EventEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

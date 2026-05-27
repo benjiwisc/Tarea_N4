@@ -3,6 +3,7 @@ package com.example.tarea_n2.data.local.dao
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.tarea_n2.data.local.entity.CategoryEntity
 import kotlinx.coroutines.flow.Flow
@@ -19,7 +20,7 @@ interface CategoryDao {
     @Query("SELECT * FROM CategoryEntity WHERE nombre = :nombre")
     suspend fun buscarPorNombre(nombre: String): CategoryEntity?
 
-    @Insert
+    @Insert (onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertarTodos(vararg categorias: CategoryEntity)
 
     @Delete

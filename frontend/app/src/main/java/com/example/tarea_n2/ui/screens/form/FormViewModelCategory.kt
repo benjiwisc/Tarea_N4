@@ -29,20 +29,14 @@ class FormViewModelCategory @Inject constructor(
             initialValue = emptyList()
         )
 
+
     init {
-        viewModelScope.launch {
-            cargarDatos()
-        }
+        actualizarDatos()
     }
 
-    fun cargarDatos() {
+    fun actualizarDatos() {
         viewModelScope.launch {
-            val existente = categoryRepository.buscarPorNombre("Conciertos")
-            if (existente == null) {
-                categoryRepository.insertarCategoria(Category(nombre="Conciertos", encargado="Juan Perez"))
-                categoryRepository.insertarCategoria(Category(nombre="Conferencias", encargado="Ana Garcia"))
-                categoryRepository.insertarCategoria(Category(nombre="Talleres", encargado="Carlos Ruiz"))
-            }
+            categoryRepository.sincronizarCategorias()
         }
     }
 
