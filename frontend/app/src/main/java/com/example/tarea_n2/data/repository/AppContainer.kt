@@ -26,7 +26,7 @@ class AppDataContainer(
 
     override val eventRepository: EventRepository by lazy {
         EventRepositoryImpl(
-            AppDatabase.getDatabase(context)
+            NetworkModule.provideEventApiService(NetworkModule.provideRetrofit())
         )
     }
 }

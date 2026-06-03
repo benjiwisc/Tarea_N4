@@ -1,36 +1,47 @@
 package com.example.tarea_n2.data.repository.event
 
-import com.example.tarea_n2.data.local.AppDatabase
-import com.example.tarea_n2.data.local.entity.EventEntity
+import android.util.Log
+import com.example.tarea_n2.data.remote.dto.EventDto
+import com.example.tarea_n2.data.remote.service.EventApiService
 import com.example.tarea_n2.ui.model.Event
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class EventRepositoryImpl @Inject constructor(
-    private val database: AppDatabase
+    private val apiService: EventApiService
 ) : EventRepository {
 
     override fun obtenerTodosEventos(): Flow<List<Event>> {
-        return database.eventDao().obtenerTodos().map { listaEntities ->
-            listaEntities.map { entity -> entity.toDomain() }
+        return flow {
+            try {
+                emit(apiService.getEventos().map { it.toDomain() })
+            } catch (e: Exception) {
+                Log.e("EventRepository", "Error al obtener eventos desde la API " + e.message, e)
+                emit(emptyList())
+            }
         }
     }
 
     override suspend fun obtenerPorId(id: Int): Event? {
-        return database.eventDao().obtenerPorId(id)?.toDomain()
+        return try {
+            apiService.getEventoById(id).toDomain()
+        } catch (e: Exception) {
+            Log.e("EventRepository", "Error al obtener evento por id desde la API " + e.message, e)
+            null
+        }
     }
 
     override suspend fun insertarEvento(evento: Event) {
-        database.eventDao().insertar(evento.toEntity())
+        apiService.createEvento(evento.toDto())
     }
 
     override suspend fun borrarEvento(evento: Event) {
-        database.eventDao().borrar(evento.toEntity())
+        apiService.deleteEvento(evento.id)
     }
 }
 
-fun EventEntity.toDomain() = Event(
+fun EventDto.toDomain() = Event(
     id = this.id,
     nombre = this.nombre,
     fecha_hora = this.fecha_hora,
@@ -39,7 +50,7 @@ fun EventEntity.toDomain() = Event(
     category = this.category
 )
 
-fun Event.toEntity() = EventEntity(
+fun Event.toDto() = EventDto(
     id = this.id,
     nombre = this.nombre,
     fecha_hora = this.fecha_hora,
